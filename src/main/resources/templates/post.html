@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Blog :: Post</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Blog :: Home</title>
+    <link th:rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.0/css/bootstrap.min.css}" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+
+    <!-- Bootstrap JS and Popper.js (required for Bootstrap) -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <a th:href="@{/}">Home</a>
+        <div class="post">
+            <h2 th:text="${post.title}">Title</h2>
+            <h5 th:text="'Category: ' + ${post.category.getCategoryName()}">Category</h5>
+            <h5 th:text="'Written by: ' + ${post.user.firstName}">Account First Name</h5>
+            <p th:text="'Created at: ' + ${post.createdAt}">Created At</p>
+            <p th:text="'Updated at: ' + ${post.updatedAt}">Updated At</p>
+            <br>
+            <p th:text="${post.body}">Body text</p>
+        </div>
+        <br>
+
+        <h5 th:text="'Average Rating: ' + ${averageRating}"></h5>
+
+        <div class="rating-section">
+            <h5>Rate this post:</h5>
+            <form th:action="@{'/ratings/{id}'(id=${post.id})}" method="post">
+                <label for="rating">Rating:</label>
+                <input type="number" id="rating" name="value" min="1" max="10" required>
+                <button type="submit">Submit Rating</button>
+            </form>
+        </div>
+        <br>
+
+        <h5>Comments:</h5>
+
+        <div class="comment" th:each="comment : ${comments}">
+            <p><a th:text="${comment.user.firstName} + ' ' + ${comment.user.lastName}  + ': ' + ${comment.text}">Text</a></p>
+            <br>
+        </div>
+
+        <ul sec:authorize="isAuthenticated()">
+            <li><a th:href="@{'/posts/' + ${post.id} + '/edit'}">Edit</a></li>
+            <li><a th:href="@{'/posts/' + ${post.id} + '/delete'}">Delete</a></li>
+        </ul>
+
+        <form action="#" method="post" th:action="@{'/comments/{id}'(id=${post.id})}" th:object="${comment}">
+            <h5>Write new comment</h5>
+            <div>
+                <label for="title">Text:</label>
+                <input type="text" id="title" name="title" th:field="*{text}" required>
+            </div>
+            <br>
+            <button type="submit">Add Comment</button>
+        </form>
+        <br>
+    </div>
+
+</body>
+</html>
